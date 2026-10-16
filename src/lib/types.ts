@@ -90,6 +90,35 @@ export interface PositioningScore {
   timestamp: string;
 }
 
+// ── News ──
+export interface NewsItem {
+  id: string;
+  instrument: Instrument | "ALL";
+  headline: string;
+  summary?: string;
+  source: string;
+  url?: string;
+  publishedAt: string; // ISO
+  sentiment?: "positive" | "negative" | "neutral";
+  tag?: string; // e.g. "EARNINGS", "MACRO", "OPEC"
+}
+
+// ── Fundamentals ──
+export interface FundamentalItem {
+  label: string;
+  value: string;
+  delta?: string;
+  direction?: "bull" | "bear" | "neutral";
+}
+
+// ── News search keywords per instrument ──
+export const NEWS_KEYWORDS: Record<Instrument, string[]> = {
+  ES: ["S&P 500", "SPX", "stock market", "Wall Street", "Fed", "interest rate"],
+  NQ: ["Nasdaq", "tech stocks", "semiconductor", "AI stocks", "FAANG"],
+  CL: ["crude oil", "WTI", "OPEC", "oil price", "petroleum", "energy"],
+  GC: ["gold", "bullion", "precious metals", "gold price", "safe haven"],
+};
+
 // ── Dashboard layout ──
 export interface PanelConfig {
   id: string;

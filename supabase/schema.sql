@@ -59,6 +59,23 @@ CREATE TABLE IF NOT EXISTS alerts (
 CREATE INDEX IF NOT EXISTS idx_alerts_recent
   ON alerts (created_at DESC);
 
+-- Cached news articles from APIs
+CREATE TABLE IF NOT EXISTS news (
+  id TEXT PRIMARY KEY,
+  instrument TEXT NOT NULL,
+  headline TEXT NOT NULL,
+  summary TEXT,
+  source TEXT NOT NULL,
+  url TEXT,
+  published_at TIMESTAMPTZ NOT NULL,
+  sentiment TEXT NOT NULL DEFAULT 'neutral',
+  tag TEXT NOT NULL DEFAULT 'MARKET',
+  cached_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_news_instrument
+  ON news (instrument, published_at DESC);
+
 -- Row Level Security: allow anon reads, service role writes
 ALTER TABLE price_bars ENABLE ROW LEVEL SECURITY;
 ALTER TABLE daily_context ENABLE ROW LEVEL SECURITY;
@@ -79,3 +96,8 @@ CREATE POLICY "Allow service update" ON cot_data FOR UPDATE USING (true);
 
 CREATE POLICY "Allow anon select" ON alerts FOR SELECT USING (true);
 CREATE POLICY "Allow service insert" ON alerts FOR INSERT WITH CHECK (true);
+
+ALTER TABLE news ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Allow anon select" ON news FOR SELECT USING (true);
+CREATE POLICY "Allow service insert" ON news FOR INSERT WITH CHECK (true);
+CREATE POLICY "Allow service update" ON news FOR UPDATE USING (true);

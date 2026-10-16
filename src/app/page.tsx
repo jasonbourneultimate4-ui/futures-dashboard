@@ -6,6 +6,8 @@ import PriceChart from "@/components/PriceChart";
 import RegimeIndicator from "@/components/RegimeIndicator";
 import PositioningGauge from "@/components/PositioningGauge";
 import AlertsPanel, { type Alert } from "@/components/AlertsPanel";
+import NewsPanel from "@/components/NewsPanel";
+import FundamentalsPanel from "@/components/FundamentalsPanel";
 
 interface InstrumentSnapshot {
   priceBars: PriceBar[];
@@ -76,12 +78,12 @@ export default function Dashboard() {
   }
 
   return (
-    <main className="flex-1 p-4 max-w-7xl mx-auto w-full">
+    <main className="flex-1 p-4 max-w-[1400px] mx-auto w-full">
       <div className="flex items-center justify-between mb-4">
         <div>
           <h1 className="text-xl font-bold">Futures Dashboard</h1>
           <p className="text-xs" style={{ color: "var(--text-secondary)" }}>
-            Market regime · Positioning · 15-min delayed
+            Market regime · Positioning · News · Fundamentals · 15-min delayed
           </p>
         </div>
         <div className="text-right text-xs" style={{ color: "var(--text-secondary)" }}>
@@ -125,17 +127,34 @@ export default function Dashboard() {
           <p style={{ color: "var(--text-secondary)" }}>Loading market data...</p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
-          <div className="md:col-span-2">
-            <PriceChart data={snap?.priceBars ?? []} title={`${selected} Price & Volume`} />
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 380px", gap: "16px" }}>
+          {/* Left column: chart, regime, positioning, alerts */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4" style={{ alignContent: "start" }}>
+            <div className="md:col-span-2">
+              <PriceChart data={snap?.priceBars ?? []} title={`${selected} Price & Volume`} />
+            </div>
+            <RegimeIndicator data={snap?.regime ?? null} />
+            <PositioningGauge data={snap?.positioning ?? null} />
+            <div className="md:col-span-2">
+              <AlertsPanel alerts={alerts} />
+            </div>
           </div>
-          <RegimeIndicator data={snap?.regime ?? null} />
-          <PositioningGauge data={snap?.positioning ?? null} />
-          <div className="md:col-span-2">
-            <AlertsPanel alerts={alerts} />
+
+          {/* Right column: fundamentals + news */}
+          <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+            <FundamentalsPanel instrument={selected} />
+            <NewsPanel instrument={selected} />
           </div>
         </div>
       )}
+
+      <style jsx>{`
+        @media (max-width: 1000px) {
+          div[style*="grid-template-columns: 1fr 380px"] {
+            grid-template-columns: 1fr !important;
+          }
+        }
+      `}</style>
     </main>
   );
 }
