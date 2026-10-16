@@ -1,8 +1,33 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #0d1117;
+  --foreground: #e6edf3;
+  --panel-bg: #161b22;
+  --border: #30363d;
+  --grid: #21262d;
+  --text-primary: #e6edf3;
+  --text-secondary: #8b949e;
+
+  --bull: #3fb950;
+  --bull-faded: #238636;
+  --bear: #f85149;
+  --bear-faded: #da3633;
+  --range: #d29922;
+  --warn: #d29922;
+  --info: #58a6ff;
+
+  --price-line: #58a6ff;
+  --volume-bar: #58a6ff;
+  --gauge-bg: #21262d;
+  --gauge-mid: #30363d;
+
+  --alert-info-bg: rgba(88,166,255,0.08);
+  --alert-info-border: rgba(88,166,255,0.2);
+  --alert-warn-bg: rgba(210,153,34,0.08);
+  --alert-warn-border: rgba(210,153,34,0.2);
+  --alert-crit-bg: rgba(248,81,73,0.08);
+  --alert-crit-border: rgba(248,81,73,0.2);
 }
 
 @theme inline {
@@ -12,15 +37,23 @@
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
 body {
   background: var(--background);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
+}
+
+.panel {
+  background: var(--panel-bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 16px;
+}
+
+.panel-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
 }
