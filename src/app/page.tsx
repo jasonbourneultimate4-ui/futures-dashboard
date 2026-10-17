@@ -8,6 +8,7 @@ import PositioningGauge from "@/components/PositioningGauge";
 import AlertsPanel, { type Alert } from "@/components/AlertsPanel";
 import NewsPanel from "@/components/NewsPanel";
 import FundamentalsPanel from "@/components/FundamentalsPanel";
+import RelationshipGraph from "@/components/RelationshipGraph";
 
 interface InstrumentSnapshot {
   priceBars: PriceBar[];
@@ -145,6 +146,12 @@ export default function Dashboard() {
             <FundamentalsPanel instrument={selected} />
             <NewsPanel instrument={selected} />
           </div>
+        </div>
+      )}
+
+      {!loading && (
+        <div style={{ marginTop: "16px" }}>
+          <RelationshipGraph instrument={selected} />
         </div>
       )}
 
