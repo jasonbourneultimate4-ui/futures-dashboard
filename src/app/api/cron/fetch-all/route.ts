@@ -7,6 +7,7 @@ import {
   type Instrument,
   type NewsItem,
 } from "@/lib/types";
+import { analyzeHeadline, computeNewsSentimentIndex } from "@/lib/news-sentiment";
 
 /**
  * Comprehensive cron job: fetches ALL external data and caches in Supabase.
@@ -577,19 +578,51 @@ async function fetchNews(supabase: any): Promise<string> {
     const top = allNews.slice(0, 20);
 
     if (top.length > 0) {
-      const rows = top.map((n) => ({
-        id: n.id,
-        instrument: n.instrument,
-        headline: n.headline,
-        summary: n.summary,
-        source: n.source,
-        url: n.url,
-        published_at: n.publishedAt,
-        sentiment: n.sentiment,
-        tag: n.tag,
-      }));
-      await supabase.from("news").upsert(rows, { onConflict: "id" });
+      // Run sentiment analysis on each article
+      const analyzedRows = top.map((n) => {
+        const analysis = analyzeHeadline(n.headline, n.summary, instrument);
+        return {
+          id: n.id,
+          instrument: n.instrument,
+          headline: n.headline,
+          summary: n.summary,
+          source: n.source,
+          url: n.url,
+          published_at: n.publishedAt,
+          sentiment: analysis.sentimentLabel === "very_bullish" || analysis.sentimentLabel === "bullish"
+            ? "positive"
+            : analysis.sentimentLabel === "very_bearish" || analysis.sentimentLabel === "bearish"
+            ? "negative"
+            : "neutral",
+          tag: analysis.tag,
+          sentiment_score: analysis.sentimentScore,
+          sentiment_label: analysis.sentimentLabel,
+          impact_level: analysis.impactLevel,
+          impact_score: analysis.impactScore,
+        };
+      });
+
+      await supabase.from("news").upsert(analyzedRows, { onConflict: "id" });
       totalInserted += top.length;
+
+      // Compute and cache aggregate sentiment index
+      const sentimentIndex = computeNewsSentimentIndex(
+        analyzedRows.map((r) => ({
+          sentimentScore: r.sentiment_score,
+          impactScore: r.impact_score,
+          publishedAt: r.published_at,
+        }))
+      );
+
+      await supabase.from("news_sentiment_cache").upsert({
+        instrument,
+        sentiment_index: sentimentIndex.index,
+        sentiment_label: sentimentIndex.label,
+        article_count: sentimentIndex.articleCount,
+        bullish_pct: sentimentIndex.bullishPct,
+        bearish_pct: sentimentIndex.bearishPct,
+        cached_at: new Date().toISOString(),
+      }, { onConflict: "instrument" });
     }
   }
 
