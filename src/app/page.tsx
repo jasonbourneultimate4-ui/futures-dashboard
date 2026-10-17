@@ -9,6 +9,7 @@ import AlertsPanel, { type Alert } from "@/components/AlertsPanel";
 import NewsPanel from "@/components/NewsPanel";
 import FundamentalsPanel from "@/components/FundamentalsPanel";
 import RelationshipGraph from "@/components/RelationshipGraph";
+import NetworkGraph from "@/components/NetworkGraph";
 
 interface InstrumentSnapshot {
   priceBars: PriceBar[];
@@ -146,6 +147,12 @@ export default function Dashboard() {
             <FundamentalsPanel instrument={selected} />
             <NewsPanel instrument={selected} />
           </div>
+        </div>
+      )}
+
+      {!loading && (
+        <div style={{ marginTop: "16px" }}>
+          <NetworkGraph instrument={selected} />
         </div>
       )}
 

@@ -113,3 +113,27 @@ ALTER TABLE factor_cache ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Allow anon select" ON factor_cache FOR SELECT USING (true);
 CREATE POLICY "Allow service insert" ON factor_cache FOR INSERT WITH CHECK (true);
 CREATE POLICY "Allow service update" ON factor_cache FOR UPDATE USING (true);
+
+-- Correlation cache (6h TTL, recomputed from Yahoo Finance historical data)
+CREATE TABLE IF NOT EXISTS correlation_cache (
+  id TEXT PRIMARY KEY DEFAULT 'latest',
+  data JSONB NOT NULL,
+  cached_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+ALTER TABLE correlation_cache ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Allow anon select" ON correlation_cache FOR SELECT USING (true);
+CREATE POLICY "Allow service insert" ON correlation_cache FOR INSERT WITH CHECK (true);
+CREATE POLICY "Allow service update" ON correlation_cache FOR UPDATE USING (true);
+
+-- Supply chain cache (12h TTL, recomputed from FRED/EIA data)
+CREATE TABLE IF NOT EXISTS supply_chain_cache (
+  id TEXT PRIMARY KEY,
+  data JSONB NOT NULL,
+  cached_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+ALTER TABLE supply_chain_cache ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Allow anon select" ON supply_chain_cache FOR SELECT USING (true);
+CREATE POLICY "Allow service insert" ON supply_chain_cache FOR INSERT WITH CHECK (true);
+CREATE POLICY "Allow service update" ON supply_chain_cache FOR UPDATE USING (true);
