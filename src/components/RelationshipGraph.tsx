@@ -77,6 +77,29 @@ export default function RelationshipGraph({ instrument }: RelationshipGraphProps
     x: number;
     y: number;
   } | null>(null);
+  const [liveFactors, setLiveFactors] = useState<Record<string, { value: string; delta: string; dir: string }> | null>(null);
+  const [dataSource, setDataSource] = useState<string>("");
+
+  /* fetch live factor values */
+  useEffect(() => {
+    let cancelled = false;
+    async function load() {
+      try {
+        const res = await fetch("/api/factors");
+        if (!res.ok) return;
+        const json = await res.json();
+        if (!cancelled) {
+          setLiveFactors(json.factors);
+          setDataSource(
+            Array.isArray(json.sources) ? json.sources.join(", ") : json.source ?? ""
+          );
+        }
+      } catch { /* silent */ }
+    }
+    load();
+    const iv = setInterval(load, 5 * 60_000); // refresh every 5 min
+    return () => { cancelled = true; clearInterval(iv); };
+  }, []);
 
   /* responsive resize */
   useEffect(() => {
@@ -91,7 +114,20 @@ export default function RelationshipGraph({ instrument }: RelationshipGraphProps
   }, []);
 
   const map = RELATIONSHIP_MAPS[instrument];
-  const positioned = layoutNodes(map.nodes, instrument, dims.w, dims.h);
+
+  /* merge live data into nodes */
+  const liveNodes = map.nodes.map((node) => {
+    const live = liveFactors?.[node.id];
+    if (!live) return node;
+    return {
+      ...node,
+      value: live.value,
+      delta: live.delta,
+      direction: live.dir as FactorNode["direction"],
+    };
+  });
+
+  const positioned = layoutNodes(liveNodes, instrument, dims.w, dims.h);
   const posMap = new Map(positioned.map((p) => [p.node.id, p]));
 
   /* which edges touch the hovered node */
@@ -190,6 +226,11 @@ export default function RelationshipGraph({ instrument }: RelationshipGraphProps
           <span>
             <span style={{ color: "var(--bear)" }}>- - -</span> negative
           </span>
+          {dataSource && (
+            <span style={{ marginLeft: "8px", opacity: 0.5 }}>
+              via {dataSource}
+            </span>
+          )}
         </div>
       </div>
 

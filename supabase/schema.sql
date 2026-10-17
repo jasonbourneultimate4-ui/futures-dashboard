@@ -101,3 +101,15 @@ ALTER TABLE news ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Allow anon select" ON news FOR SELECT USING (true);
 CREATE POLICY "Allow service insert" ON news FOR INSERT WITH CHECK (true);
 CREATE POLICY "Allow service update" ON news FOR UPDATE USING (true);
+
+-- Cached factor values for relationship graph (Yahoo Finance + FRED)
+CREATE TABLE IF NOT EXISTS factor_cache (
+  id TEXT PRIMARY KEY DEFAULT 'latest',
+  data JSONB NOT NULL,
+  cached_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+ALTER TABLE factor_cache ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Allow anon select" ON factor_cache FOR SELECT USING (true);
+CREATE POLICY "Allow service insert" ON factor_cache FOR INSERT WITH CHECK (true);
+CREATE POLICY "Allow service update" ON factor_cache FOR UPDATE USING (true);
