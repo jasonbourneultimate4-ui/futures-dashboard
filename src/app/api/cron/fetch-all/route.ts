@@ -31,26 +31,52 @@ const NEWSDATA_API_KEY = process.env.NEWSDATA_API_KEY ?? "";
  * 1. PRICE BARS
  * ═══════════════════════════════════════════ */
 
+const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
+
+async function fetchYahooChart(symbol: string): Promise<any> {
+  // Try query2 first (less rate-limited), fall back to query1
+  const hosts = ["query2.finance.yahoo.com", "query1.finance.yahoo.com"];
+  for (const host of hosts) {
+    try {
+      const url = `https://${host}/v8/finance/chart/${encodeURIComponent(symbol)}?interval=15m&range=5d`;
+      const res = await fetch(url, {
+        headers: {
+          "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        },
+        signal: AbortSignal.timeout(10000),
+      });
+      if (!res.ok) {
+        console.log(`[cron] Yahoo ${host} ${symbol}: HTTP ${res.status}`);
+        continue;
+      }
+      const json = await res.json();
+      const result = json.chart?.result?.[0];
+      if (result) return result;
+    } catch (err: any) {
+      console.log(`[cron] Yahoo ${host} ${symbol}: ${err.message}`);
+    }
+  }
+  return null;
+}
+
 async function fetchPriceBars(supabase: any): Promise<Record<string, number>> {
   const results: Record<string, number> = {};
 
-  for (const instrument of INSTRUMENTS) {
+  for (let idx = 0; idx < INSTRUMENTS.length; idx++) {
+    const instrument = INSTRUMENTS[idx];
     try {
       const meta = INSTRUMENT_META[instrument];
-      const url = `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(meta.yahoo)}?interval=15m&range=5d`;
-      const res = await fetch(url, {
-        headers: { "User-Agent": "futures-dashboard/1.0" },
-      });
-      if (!res.ok) { results[instrument] = -1; continue; }
 
-      const json = await res.json();
-      const result = json.chart?.result?.[0];
+      // Add delay between requests to avoid rate limiting (skip first)
+      if (idx > 0) await sleep(2000);
+
+      const result = await fetchYahooChart(meta.yahoo);
       if (!result) { results[instrument] = -1; continue; }
 
       const timestamps: number[] = result.timestamp ?? [];
       const quote = result.indicators?.quote?.[0] ?? {};
 
-      const rows = timestamps.map((ts, i) => ({
+      const rows = timestamps.map((ts: number, i: number) => ({
         instrument,
         timestamp: new Date(ts * 1000).toISOString(),
         open: quote.open?.[i] ?? 0,
@@ -64,6 +90,7 @@ async function fetchPriceBars(supabase: any): Promise<Record<string, number>> {
         await supabase.from("price_bars").upsert(rows, { onConflict: "instrument,timestamp" });
       }
       results[instrument] = rows.length;
+      console.log(`[cron] price_bars ${instrument}: ${rows.length} bars, last close=${rows[rows.length - 1]?.close}`);
     } catch (err: any) {
       results[instrument] = -1;
       console.error(`[cron] price_bars ${instrument}:`, err.message);
