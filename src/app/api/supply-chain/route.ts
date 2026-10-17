@@ -87,7 +87,7 @@ async function buildCLChain(): Promise<SupplyChainNode[]> {
   // FRED-based macro chain nodes
   const series: {
     id: string; seriesId: string; label: string; detail: string;
-    chain: "upstream" | "downstream"; fmt: (v: number) => string;
+    chain: "upstream" | "downstream" | "both"; fmt: (v: number) => string;
     deltaFmt: (v: number, p: number) => string;
   }[] = [
     {

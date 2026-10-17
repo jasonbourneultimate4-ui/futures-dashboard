@@ -65,6 +65,7 @@ async function fetchAlphaVantage(instrument: Instrument): Promise<NewsItem[]> {
   const tickerMap: Record<Instrument, string> = {
     ES: "SPY",
     NQ: "QQQ",
+    YM: "DIA",
     CL: "USO",
     GC: "GLD",
   };
