@@ -33,6 +33,7 @@ const YAHOO_FACTORS: YahooFactor[] = [
   { id: "GC", ticker: "GC=F", label: "Gold (GC)", category: "instrument", format: "price", prefix: "$" },
   { id: "ES", ticker: "ES=F", label: "S&P 500 (ES)", category: "instrument", format: "number" },
   { id: "NQ", ticker: "NQ=F", label: "Nasdaq (NQ)", category: "instrument", format: "number" },
+  { id: "YM", ticker: "YM=F", label: "Dow (YM)", category: "instrument", format: "number" },
   { id: "CL", ticker: "CL=F", label: "Crude Oil (CL)", category: "instrument", format: "price", prefix: "$" },
   // Commodities
   { id: "SI", ticker: "SI=F", label: "Silver (SI)", category: "commodity", format: "price", prefix: "$" },

@@ -24,6 +24,14 @@ const FUNDAMENTALS: Record<Instrument, FundamentalItem[]> = {
     { label: "VIX", value: "14.82", delta: "-0.31", direction: "bull" },
     { label: "USD/JPY", value: "154.20", delta: "+0.3%", direction: "neutral" },
   ],
+  YM: [
+    { label: "10Y Yield", value: "4.87%", delta: "+3.2 bps", direction: "bear" },
+    { label: "VIX", value: "14.82", delta: "-0.31", direction: "bull" },
+    { label: "DXY", value: "106.42", delta: "+0.18", direction: "neutral" },
+    { label: "Fed Funds", value: "4.50%", delta: "—", direction: "neutral" },
+    { label: "PMI Mfg", value: "55.0", delta: "+0.8", direction: "bull" },
+    { label: "Jobless Claims", value: "200K", delta: "-5K", direction: "bull" },
+  ],
   CL: [
     { label: "EIA Inv.", value: "-1.4M bbl", delta: "Draw", direction: "bull" },
     { label: "OPEC+ Prod", value: "27.8M b/d", delta: "+0.2M", direction: "bear" },

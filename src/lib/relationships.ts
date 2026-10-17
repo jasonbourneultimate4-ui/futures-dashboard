@@ -135,6 +135,40 @@ export const RELATIONSHIP_MAPS: Record<Instrument, RelationshipMap> = {
     ],
   },
 
+  YM: {
+    nodes: [
+      { id: "YM", label: "Dow (YM)", category: "instrument", value: "43,200", delta: "+0.2%", direction: "up" },
+      { id: "US10Y", label: "10Y Treasury Yield", category: "macro", value: "4.87%", delta: "+3.2 bps", direction: "up" },
+      { id: "FED_RATE", label: "Fed Funds Rate", category: "macro", value: "4.50%", delta: "—", direction: "flat" },
+      { id: "VIX", label: "VIX", category: "sentiment", value: "14.82", delta: "-0.31", direction: "down" },
+      { id: "DXY", label: "US Dollar (DXY)", category: "currency", value: "106.42", delta: "+0.18%", direction: "up" },
+      { id: "PMI", label: "ISM PMI Mfg", category: "macro", value: "55.0", delta: "+0.8", direction: "up" },
+      { id: "CLAIMS", label: "Jobless Claims", category: "macro", value: "200K", delta: "-5K", direction: "down" },
+      { id: "CPI", label: "Inflation (CPI YoY)", category: "macro", value: "2.6%", delta: "-0.1%", direction: "down" },
+      { id: "ES", label: "S&P 500 (ES)", category: "instrument", value: "7,744", delta: "+0.3%", direction: "up" },
+      { id: "CL", label: "Crude Oil (CL)", category: "commodity", value: "$94.80", delta: "+0.6%", direction: "up" },
+      { id: "CREDIT", label: "IG Credit Spread", category: "sentiment", value: "82 bps", delta: "-2 bps", direction: "down" },
+      { id: "USDJPY", label: "USD/JPY", category: "currency", value: "154.20", delta: "+0.3%", direction: "up" },
+    ],
+    edges: [
+      { from: "US10Y", to: "YM", correlation: "negative", strength: "moderate", label: "Higher yields → equity discount" },
+      { from: "FED_RATE", to: "YM", correlation: "negative", strength: "moderate", label: "Rate hikes → tighter liquidity" },
+      { from: "VIX", to: "YM", correlation: "negative", strength: "strong", label: "Fear gauge inverse to stocks" },
+      { from: "PMI", to: "YM", correlation: "positive", strength: "strong", label: "Dow heavy in industrials/cyclicals" },
+      { from: "CLAIMS", to: "YM", correlation: "negative", strength: "moderate", label: "Rising claims → recession fear" },
+      { from: "CPI", to: "YM", correlation: "negative", strength: "moderate", label: "Hot inflation → hawkish Fed fear" },
+      { from: "CREDIT", to: "YM", correlation: "negative", strength: "moderate", label: "Widening spreads → risk-off" },
+      { from: "DXY", to: "YM", correlation: "negative", strength: "moderate", label: "Strong $ → multinational headwind" },
+      { from: "CL", to: "YM", correlation: "negative", strength: "weak", label: "Oil spike → cost pressure on industrials" },
+      // What YM influences
+      { from: "YM", to: "ES", correlation: "positive", strength: "strong", label: "Dow and S&P highly correlated" },
+      { from: "YM", to: "USDJPY", correlation: "positive", strength: "moderate", label: "Risk-on → carry trade" },
+      // Cross-factor
+      { from: "FED_RATE", to: "US10Y", correlation: "positive", strength: "strong" },
+      { from: "CPI", to: "FED_RATE", correlation: "positive", strength: "moderate" },
+    ],
+  },
+
   CL: {
     nodes: [
       { id: "CL", label: "Crude Oil (CL)", category: "instrument", value: "$94.80", delta: "+0.6%", direction: "up" },

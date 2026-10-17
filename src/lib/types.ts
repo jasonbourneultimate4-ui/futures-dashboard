@@ -1,7 +1,7 @@
 // ── Instruments ──
-export type Instrument = "ES" | "NQ" | "CL" | "GC";
+export type Instrument = "ES" | "NQ" | "YM" | "CL" | "GC";
 
-export const INSTRUMENTS: Instrument[] = ["ES", "NQ", "CL", "GC"];
+export const INSTRUMENTS: Instrument[] = ["ES", "NQ", "YM", "CL", "GC"];
 
 export const INSTRUMENT_META: Record<
   Instrument,
@@ -9,6 +9,7 @@ export const INSTRUMENT_META: Record<
 > = {
   ES: { name: "E-mini S&P 500", yahoo: "ES=F", tickSize: 0.25, tickValue: 12.5 },
   NQ: { name: "E-mini Nasdaq 100", yahoo: "NQ=F", tickSize: 0.25, tickValue: 5.0 },
+  YM: { name: "E-mini Dow", yahoo: "YM=F", tickSize: 1.0, tickValue: 5.0 },
   CL: { name: "Crude Oil", yahoo: "CL=F", tickSize: 0.01, tickValue: 10.0 },
   GC: { name: "Gold", yahoo: "GC=F", tickSize: 0.1, tickValue: 10.0 },
 };
@@ -115,6 +116,7 @@ export interface FundamentalItem {
 export const NEWS_KEYWORDS: Record<Instrument, string[]> = {
   ES: ["S&P 500", "SPX", "stock market", "Wall Street", "Fed", "interest rate"],
   NQ: ["Nasdaq", "tech stocks", "semiconductor", "AI stocks", "FAANG"],
+  YM: ["Dow Jones", "DJIA", "Dow futures", "blue chip", "industrials"],
   CL: ["crude oil", "WTI", "OPEC", "oil price", "petroleum", "energy"],
   GC: ["gold", "bullion", "precious metals", "gold price", "safe haven"],
 };
