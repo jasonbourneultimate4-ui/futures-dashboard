@@ -3,10 +3,12 @@
 import { useState } from "react";
 import { INSTRUMENTS, type Instrument } from "@/lib/types";
 import NewsPanel from "@/components/NewsPanel";
-import FundamentalsPanel from "@/components/FundamentalsPanel";
 import RelationshipGraph from "@/components/RelationshipGraph";
 import NetworkGraph from "@/components/NetworkGraph";
 import MacroRegimePanel from "@/components/MacroRegimePanel";
+import EconomicScorecard from "@/components/EconomicScorecard";
+import NarrativeEngine from "@/components/NarrativeEngine";
+import DivergenceDetector from "@/components/DivergenceDetector";
 
 const INSTRUMENT_LABELS: Record<Instrument, string> = {
   ES: "S&P 500",
@@ -53,19 +55,25 @@ export default function Dashboard() {
         })}
       </div>
 
-      {/* Row 1: Macro Regime + Fundamentals + News */}
+      {/* Row 1: Macro Regime + Economic Scorecard + News */}
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "16px" }}>
         <MacroRegimePanel instrument={selected} />
-        <FundamentalsPanel instrument={selected} />
+        <EconomicScorecard instrument={selected} />
         <NewsPanel instrument={selected} />
       </div>
 
-      {/* Row 2: Relationship Map */}
+      {/* Row 2: Narrative Briefing + Divergence Alerts */}
+      <div style={{ display: "grid", gridTemplateColumns: "2fr 1fr", gap: "16px", marginTop: "16px" }}>
+        <NarrativeEngine instrument={selected} />
+        <DivergenceDetector instrument={selected} />
+      </div>
+
+      {/* Row 3: Relationship Map */}
       <div style={{ marginTop: "16px" }}>
         <RelationshipGraph instrument={selected} />
       </div>
 
-      {/* Row 3: Network Analysis (correlations + heatmap + shock sim) */}
+      {/* Row 4: Network Analysis (correlations + heatmap + shock sim) */}
       <div style={{ marginTop: "16px" }}>
         <NetworkGraph instrument={selected} />
       </div>
